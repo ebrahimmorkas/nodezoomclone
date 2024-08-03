@@ -6,13 +6,12 @@
     <title>Room</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
-    <div id="video-grid">
-
-    </div>
+    <div id="video-grid"></div>
     <script>
-        const room_id = " <%= roomID %>"
+        const room_id = "<%= roomID %>";
     </script>
     <script src="script.js"></script>
 </body>

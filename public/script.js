@@ -7,7 +7,7 @@ let myVideoStream;
 
 navigator.mediaDevices.getUserMedia({
     video: true,
-    audio: false
+    audio: true
 }).then(stream => {
     myVideoStream = stream;
     addVideoStream(myVideo, stream);
@@ -26,6 +26,19 @@ navigator.mediaDevices.getUserMedia({
             connectToNewUser(userID, stream);
         }, 1000); // Slight delay to ensure both peers are ready
     });
+    // Message section
+    let message = document.getElementById('chat_message');
+    message.addEventListener('keydown', (event) => {
+        if (event.key == 'Enter' && message.value.trim().length != 0) {
+            socket.emit('message', message.value)
+            message.value = "";
+        }
+    })
+
+    socket.on('createMessage', message => {
+        document.querySelector('.messages').insertAdjacentHTML('beforeend', `<li class="message"><b>User</b><br/>${message}</li>`)
+        scrollToBottom();
+    })
 });
 
 const peer = new Peer(undefined, {
@@ -54,15 +67,35 @@ const addVideoStream = (video, stream) => {
     videoGrid.append(video);
 };
 
-// Message section
-let message = document.getElementById('chat_message');
-message.addEventListener('keydown', (event) => {
-    if(event.key == 'Enter' && message.value.trim().length != 0) {
-        socket.emit('message', message.value)
-        message.value = "";
-    }
-})
+const scrollToBottom = () => {
+    let d = $('.main__chat__window');
+    d.scrollTop(d.prop("scrollHeight"));
+}
 
-socket.on('createMessage', message => {
-    console.log('this is coming ' + message)
-})
+// Function for muting our audio
+const muteUnmute = () => {
+    const enabled = myVideoStream.getAudioTracks()[0].enabled;
+    if(enabled) {
+        myVideoStream.getAudioTracks()[0].enabled = false;
+        setUnmuteButton();
+    } else {
+        setMuteButton();
+        myVideoStream.getAudioTracks()[0].enabled = true;
+    }
+}
+
+const setMuteButton = () => {
+    const html = `
+        <i class="fas fa-microphone"></i>
+        <span>Mute</span>
+    `
+    document.querySelector('.main__mute__button').innerHTML = html;
+}
+
+const setUnmuteButton = () => {
+    const html = `
+        <i class="unmute fas fa-microphone-slash"></i>
+        <span>Unmute</span>
+    `
+    document.querySelector('.main__mute__button').innerHTML = html;
+}

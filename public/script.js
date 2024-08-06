@@ -53,3 +53,16 @@ const addVideoStream = (video, stream) => {
     });
     videoGrid.append(video);
 };
+
+// Message section
+let message = document.getElementById('chat_message');
+message.addEventListener('keydown', (event) => {
+    if(event.key == 'Enter' && message.value.trim().length != 0) {
+        socket.emit('message', message.value)
+        message.value = "";
+    }
+})
+
+socket.on('createMessage', message => {
+    console.log('this is coming ' + message)
+})

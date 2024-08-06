@@ -102,6 +102,6 @@ video{
     list-style: none;
 }
 
-.unmute{
+.unmute, .stop{
     color: red;
 }
